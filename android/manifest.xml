@@ -1,0 +1,9 @@
+<!--START_PLUGINS_MANIFEST-->
+	 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+<!--END_PLUGINS_MANIFEST-->
+<!--START_PLUGINS_APPLICATION-->
+<!--END_PLUGINS_APPLICATION-->

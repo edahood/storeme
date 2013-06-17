@@ -1,0 +1,17 @@
+{
+  "name": "storeme",
+  "directories": {
+  },
+  "dependencies": {
+    
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edahood/storeme.git"
+  },
+  "author": "Dahood",
+  "version": "1.0.0"
+}

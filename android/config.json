@@ -1,0 +1,12 @@
+{
+		"copyFiles": [
+			"StoreMe.java"
+		],
+		"libraries": [
+		],
+		"jars": [
+		],
+		"injectionXML": "manifest.xml",
+		"injectionXSL": "manifest.xsl"
+}
+
