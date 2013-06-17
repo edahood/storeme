@@ -16,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import java.util.HashMap;
-
 import com.tealeaf.plugin.IPlugin;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -45,15 +44,15 @@ public class StoreMePlugin implements IPlugin {
             this.result = null;
 			this.failed = true;
 		}
-        
+
         public StoreMeEvent(String Filename, boolean bOutput, String content) {
 			super("storeme");
 			this.Filename = Filename;
             this.failed = false;
-		    
-            
+
+
             if (bOutput){
-                try { 
+                try {
                     this.bOutput = true;
                     this.filePutContents(this.Filename,content);
                 } catch(Exception e){
@@ -67,15 +66,15 @@ public class StoreMePlugin implements IPlugin {
              }
 		}
 
-        
-       
+
+
          private boolean openOutFile(String Filename, int Mode, String key){
          _res = false;
-         try {    
+         try {
              _out = openFileOutput(Filename, Mode);
              this.files_out.put(key, new FileWriter(_out.getFD()));
              _res = true;
-             
+
             } catch(Exception e){
                Log.e(LOG_TAG, "File Not Opened for Output");
                 _res = false;
@@ -84,7 +83,7 @@ public class StoreMePlugin implements IPlugin {
     	}
          private boolean openInputFile(String Filename, int Mode, String key){
                  _res = false;
-         try {    
+         try {
              _in = openFileInput(Filename, Mode);
              this.files_in.put(key,  new FileReader(_in.getFD()));
              _res = true;
@@ -107,15 +106,15 @@ public class StoreMePlugin implements IPlugin {
            if (this.files_in.containsKey(key)){
                byteCount = 8192;
                _read = null;
-               
+
                while(_read !== -1 && (_read === null || _read === byteCount) ){
                char[] rbuff = new char[byteCount];
-                
+
                 _read = this.files_in.get(key).read(rbuff,0, byteCount);
                  if (_read > 0){
                    decoded += new String(rbuff, "UTF-8");
                  }
-                }           
+                }
              }
             else {
                 logger.log("{storeme} output file not in map ", key);
@@ -127,40 +126,40 @@ public class StoreMePlugin implements IPlugin {
            if(this.files_in.containsKey(key)){
                try {
                    this.files_in.get(key).close();
-                   
+
                }catch(Exception e){
                    logger.log("{storeme} failed to close input file ", key );
-                   
+
                }
                finally {
                    this.files_in.remove(key);
-                   
+
                }
-               
+
            }
-         
-         
+
+
 	    }
-        
+
         public void closeOutput(String key){
            if(this.files_out.containsKey(key)){
                try {
                    this.files_out.get(key).close();
-                   
+
                }catch(Exception e){
                    logger.log("{storeme} failed to close output file ", key );
-                   
+
                }
                finally {
                    this.files_out.remove(key);
-                   
+
                }
-               
+
            }
-         
-         
+
+
         }
-        
+
         public String fileGetContents(String Filename){
             String key = Filename;
             boolean bBare = true;
@@ -182,7 +181,7 @@ public class StoreMePlugin implements IPlugin {
         public void filePutContents(String Filename, String content){
             String key = Filename;
             boolean bBare = true;
-          
+
              while (this.files_out.containsKey(key)){
                 if (bBare) key.concat("_");
                 key.concat("1");
@@ -200,9 +199,9 @@ public class StoreMePlugin implements IPlugin {
 
 	boolean _file_ask;
 	Context _ctx;
-	
+
 	public StoreMePlugin() {
-	    
+
 	}
 
 	public void onCreateApplication(Context applicationContext) {
@@ -210,7 +209,7 @@ public class StoreMePlugin implements IPlugin {
 	}
 
 	public void onCreate(Activity activity, Bundle savedInstanceState) {
-	
+
 		_file_ask = false;
 	}
 
@@ -238,7 +237,7 @@ public class StoreMePlugin implements IPlugin {
 	public void onActivityResult(Integer request, Integer result, Intent data) {
 	}
 
-	
+
 	public void onRequest(String jsonData) {
 		try {
             JSONObject data = new JSONObject(jsonData);
@@ -249,9 +248,9 @@ public class StoreMePlugin implements IPlugin {
             if (method.equals("write")){
                 bOutput = true;
             }
-             EventQueue.pushEvent(new StoreMeEvent(filename, bOutput,content));            
-			
-			}	
+             EventQueue.pushEvent(new StoreMeEvent(filename, bOutput,content));
+
+			}
 		 catch (Exception e) {
 			logger.log(e);
 			e.printStackTrace();

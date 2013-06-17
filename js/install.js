@@ -1,5 +1,5 @@
 // If on true native mobile platform,
-if (!storeme || !storeme.read) {
+if (!navigator.storeme || !navigator.storeme.read) {
 	logger.log("{storeme} Installing JS component for native");
 
 	var onSuccess = [];
@@ -28,7 +28,7 @@ if (!storeme || !storeme.read) {
     		 filename: evt.Filename,
              output: evt.result
 			};
-           
+
 
 			// Invoke all the callbacks
 			for (var ii = 0; ii < onSuccess.length; ++ii) {
@@ -43,7 +43,7 @@ if (!storeme || !storeme.read) {
 	// The navigator global already exists, but the geolocation property does not.
 	// So add it:
 
-	GLOBAL.storeme = {
+	GLOBAL.navigator.storeme = {
 		read: function(filename, cbSuccess, cbFail) {
 			// Post a new request
              var cmd = {method: "read", filename: filename, content: ""};
@@ -59,7 +59,7 @@ if (!storeme || !storeme.read) {
         write: function(filename, content, cbSuccess, cbFail) {
     		// Post a new request
             var cmd = {method: "write", filename: filename, content: content};
-            
+
 			NATIVE.plugins.sendEvent("StoreMePlugin", "onRequest", JSON.stringify(cmd));
 			// Insert callbacks into waiting lists
 			if (typeof(cbSuccess) == "function") {

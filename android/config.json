@@ -1,6 +1,6 @@
 {
 		"copyFiles": [
-			"StoreMe.java"
+			"StoreMePlugin.java"
 		],
 		"libraries": [
 		],
