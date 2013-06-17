@@ -6,7 +6,7 @@ if (!navigator.storeme || !navigator.storeme.read) {
 	var onFail = [];
 
 	NATIVE.events.registerHandler('storeme', function(evt) {
-		logger.log("Got STOREME event -cat");
+		logger.log("Got STOREME event " + JSON.stringify(evt));
 		if (evt.failed) {
 			// Create HTML5-like error object
 			var err = {
@@ -47,7 +47,9 @@ if (!navigator.storeme || !navigator.storeme.read) {
 		read: function(filename, cbSuccess, cbFail) {
 			// Post a new request
              var cmd = {method: "read", filename: filename, content: ""};
-			NATIVE.plugins.sendEvent("StoreMePlugin", "onRequest", JSON.stringify(cmd));
+             var jsoncmd = JSON.stringify(cmd);
+            logger.log("{storeme} jsoncmd for read " + jsoncmd);
+			NATIVE.plugins.sendEvent("StoreMePlugin", "onRequest", jsoncmd);
 			// Insert callbacks into waiting lists
 			if (typeof(cbSuccess) == "function") {
 				onSuccess.push(cbSuccess);
@@ -59,8 +61,9 @@ if (!navigator.storeme || !navigator.storeme.read) {
         write: function(filename, content, cbSuccess, cbFail) {
     		// Post a new request
             var cmd = {method: "write", filename: filename, content: content};
-
-			NATIVE.plugins.sendEvent("StoreMePlugin", "onRequest", JSON.stringify(cmd));
+             var jsoncmd = JSON.stringify(cmd);
+            logger.log("{storeme} jsoncmd for write " + jsoncmd);
+			NATIVE.plugins.sendEvent("StoreMePlugin", "onRequest", jsoncmd);
 			// Insert callbacks into waiting lists
 			if (typeof(cbSuccess) == "function") {
 				onSuccess.push(cbSuccess);

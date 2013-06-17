@@ -1,7 +1,13 @@
 package com.tealeaf.plugin.plugins;
 import java.util.Map;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.nio.charset.Charset;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,7 +21,6 @@ import com.tealeaf.event.PluginEvent;
 import android.content.pm.PackageManager;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
-import java.util.HashMap;
 import com.tealeaf.plugin.IPlugin;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,9 +33,14 @@ import android.util.Log;
 import com.tealeaf.EventQueue;
 import com.tealeaf.event.*;
 
+
+
 public class StoreMePlugin implements IPlugin {
+  String LOG_TAG = "{storeme}";
+  boolean _file_ask;
+  Context _ctx;
 	public class StoreMeEvent extends com.tealeaf.event.Event {
-		boolean failed;
+		    boolean failed;
         int max_outputs = 5;
         int max_inputs = 5;
         Map<String, FileWriter> files_out = new HashMap<String, FileWriter>();
@@ -45,9 +55,9 @@ public class StoreMePlugin implements IPlugin {
 			this.failed = true;
 		}
 
-        public StoreMeEvent(String Filename, boolean bOutput, String content) {
+    public StoreMeEvent(String Filename, boolean bOutput, String content) {
 			super("storeme");
-			this.Filename = Filename;
+			      this.Filename = Filename;
             this.failed = false;
 
 
@@ -69,9 +79,9 @@ public class StoreMePlugin implements IPlugin {
 
 
          private boolean openOutFile(String Filename, int Mode, String key){
-         _res = false;
+         boolean _res = false;
          try {
-             _out = openFileOutput(Filename, Mode);
+             FileOutputStream _out = _ctx.openFileOutput(Filename, Context.MODE_PRIVATE);
              this.files_out.put(key, new FileWriter(_out.getFD()));
              _res = true;
 
@@ -82,9 +92,9 @@ public class StoreMePlugin implements IPlugin {
             return _res;
     	}
          private boolean openInputFile(String Filename, int Mode, String key){
-                 _res = false;
+              boolean _res = false;
          try {
-             _in = openFileInput(Filename, Mode);
+             FileInputStream _in = _ctx.openFileInput(Filename);
              this.files_in.put(key,  new FileReader(_in.getFD()));
              _res = true;
             } catch(Exception e){
@@ -95,30 +105,43 @@ public class StoreMePlugin implements IPlugin {
     	}
         public void write(String key, String content){
     	   if (this.files_out.containsKey(key)){
-                this.files_out.get(key).write(content.getBytes());
+                try {
+                this.files_out.get(key).write(content);
+                } catch(IOException e){
+                  this.failed = true;
+
+                  Log.e(LOG_TAG, "File Write error");
+                }
             }
             else {
+                 this.failed = true;
                 logger.log("{storeme} output file not in map ", key);
             }
 		}
         public String read(String key){
-           String decoded = '';
-           if (this.files_in.containsKey(key)){
-               byteCount = 8192;
-               _read = null;
-
-               while(_read !== -1 && (_read === null || _read === byteCount) ){
+           String decoded = new String();
+           int byteCount = 8192;
+           int _read = -3;
+           if (this.files_in.containsKey(key) == true){
+               try {
+               while(_read != -1 && (_read >= -3 || _read >= 1 || _read == byteCount) ){
                char[] rbuff = new char[byteCount];
 
                 _read = this.files_in.get(key).read(rbuff,0, byteCount);
                  if (_read > 0){
-                   decoded += new String(rbuff, "UTF-8");
+                   decoded.concat(new String(rbuff));
                  }
                 }
+              } catch(IOException e){
+                this.failed = true;
+                logger.log("{storeme} file read error ", key);
+              }
+
              }
             else {
                 logger.log("{storeme} output file not in map ", key);
-                decoded = null;
+                this.failed = true;
+
             }
             return decoded;
 		}
@@ -197,8 +220,7 @@ public class StoreMePlugin implements IPlugin {
     }
 
 
-	boolean _file_ask;
-	Context _ctx;
+
 
 	public StoreMePlugin() {
 
@@ -244,7 +266,7 @@ public class StoreMePlugin implements IPlugin {
             String method = data.optString("method","read");
             String filename = data.optString("filename", "");
             String content = data.optString("content", "");
-            String bOutput = false;
+            boolean bOutput = false;
             if (method.equals("write")){
                 bOutput = true;
             }
